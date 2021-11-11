@@ -1,6 +1,7 @@
 package com.springboot.firstspring.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,12 +22,15 @@ public class LibraryController {
 	@PostMapping("/addBook")
 	public ResponseEntity addBookImplementation(@RequestBody Library library) {
 		
-		library.setId(library.getIsbn()+library.getAisle());
+		String id = library.getIsbn()+library.getAisle();
+		library.setId(id);
 		repository.save(library);
 		ad.setMsg("Success book is added !! ");
-		ad.setId(library.getIsbn()+library.getAisle());
+		ad.setId(id);
 		
-		return new ResponseEntity<AddResponse>(ad,HttpStatus.CREATED);
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("unique id", id);
+		return new ResponseEntity<AddResponse>(ad,headers,HttpStatus.CREATED);
 		
 	}
 

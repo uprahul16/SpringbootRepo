@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.springboot.firstspring.Service.LibraryService;
 import com.springboot.firstspring.repository.LibraryRepository;
 
 
@@ -18,19 +19,31 @@ public class LibraryController {
 	LibraryRepository repository;
 	@Autowired
 	AddResponse ad;
+	@Autowired
+	LibraryService libraryService;
 	
 	@PostMapping("/addBook")
 	public ResponseEntity addBookImplementation(@RequestBody Library library) {
 		
-		String id = library.getIsbn()+library.getAisle();
-		library.setId(id);
-		repository.save(library);
-		ad.setMsg("Success book is added !! ");
-		ad.setId(id);
+		String id = libraryService.generateId(library.getIsbn(),library.getAisle());
+			
 		
-		HttpHeaders headers = new HttpHeaders();
-		headers.add("unique id", id);
-		return new ResponseEntity<AddResponse>(ad,headers,HttpStatus.CREATED);
+		if(!libraryService.checkBookAlreadyExists(id)) {
+			library.setId(id);
+			repository.save(library);
+			ad.setMsg("Success book is added !! ");
+			ad.setId(id);
+			
+			HttpHeaders headers = new HttpHeaders();
+			headers.add("unique id", id);
+			return new ResponseEntity<AddResponse>(ad,headers,HttpStatus.CREATED);
+		}
+		else {
+			ad.setMsg("Book already exists !! ");
+			ad.setId(id);
+			return new ResponseEntity<AddResponse>(ad,HttpStatus.ACCEPTED);
+		}
+		
 		
 	}
 

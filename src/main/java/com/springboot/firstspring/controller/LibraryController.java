@@ -23,8 +23,6 @@ public class LibraryController {
 		
 		library.setId(library.getIsbn()+library.getAisle());
 		repository.save(library);
-		
-		//setting the response for the post action. MEsasge and ID plus the response code 201
 		ad.setMsg("Success book is added !! ");
 		ad.setId(library.getIsbn()+library.getAisle());
 		
